@@ -1,3 +1,5 @@
+// Nama : Krise Rohalia
+
 import java.util.Scanner;
 
 public class Main {
