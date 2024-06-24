@@ -2,7 +2,7 @@
 // TUGAS 1 BE 
 import java.util.Scanner;
 
-public class Tugas1 {
+public class Tugas{
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
 
