@@ -99,4 +99,5 @@ class estimasiWaktu{
 
         return result;
     }
+
 }
