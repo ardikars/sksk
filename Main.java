@@ -1,5 +1,3 @@
-package tugas_1;
-
 import java.util.*;
 
 // Annur Akbar Bahagia
