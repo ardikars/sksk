@@ -21,7 +21,10 @@ public class Tugas1 {
          
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
 =======
 >>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
 =======
@@ -40,8 +43,12 @@ public class Tugas1 {
             System.out.println("Nilai Tidak Sesuai Kriteria");
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
          }
 
+=======
+         } 
+>>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
 =======
          } 
 >>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
