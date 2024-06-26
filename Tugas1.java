@@ -19,16 +19,7 @@ public class Tugas1 {
          System.out.print("Nilai IPA:");
          int e=scanner.nextInt();
          
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
-=======
->>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
-=======
->>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
          System.out.println("Nama :"+name);
          double average=(double)(a+b+c+d+e)/5;
          if(average>1 && average < 50){
@@ -41,20 +32,7 @@ public class Tugas1 {
             System.out.println("Nalai Anda " + average +" A");
          }else{
             System.out.println("Nilai Tidak Sesuai Kriteria");
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-         }
-
-=======
          } 
->>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
-=======
-         } 
->>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
-=======
-         } 
->>>>>>> 65a2c4b55bdd33de63fd98632bb6ca68346ebd20
             
     }
 }
