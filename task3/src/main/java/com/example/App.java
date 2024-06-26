@@ -1,9 +1,24 @@
-// NAMA : TRI WULANDARI
-// TUGAS 1 BE 
+
+
+
+
+// package com.example;
+
+
+// public class App 
+// {
+//     public static void main( String[] args )
+//     {
+//         System.out.println( "Hello World!" );
+//     }
+// }
+
+package com.example;
+
 import java.util.Scanner;
 
-public class Tugas1 {
-    public static void main(String[] args){
+public class App {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         int pilih;
@@ -83,3 +98,4 @@ public class Tugas1 {
         return phi * jari * jari;
     }
 }
+
