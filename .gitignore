@@ -1,1 +1,6 @@
 *.class
+*.jar
+*.lst
+*.txt
+.idea
+.vscode
