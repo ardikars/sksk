@@ -10,16 +10,28 @@ import java.util.Objects;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import java.lang.String;
+
+import org.springframework.stereotype.Component;
+
+
+@Component
 public final class JwtUtils {
 
-    public static Jwt hs256Parse(String jwt, byte[] bytesKey) {
+
+    
+    // public JwtUtils(String jwtKey){
+    //     this.jwtKey = HexUtils.hexToBytes(jwtKey);
+    // }
+
+    public static Jwt hs256Parse(String jwt, byte[] jwtKey) {
         if (jwt == null) {
             throw new IllegalArgumentException("JWT token must be not null.");
         }
-        if (bytesKey.length < 32) {
+        if (jwtKey.length < 32) {
             throw new IllegalArgumentException(
                     "The signing key's size is "
-                            + (bytesKey.length << 3)
+                            + (jwtKey.length << 3)
                             + " bits which is not secure enough for the HS256 algorithm.  The JWT JWA Specification (RFC 7518, Section 3.2) states that keys used with HS256 MUST have a size >= 256 bits (the key size must be greater than or equal to the hash output size).  Consider using the io.jsonwebtoken.security.Keys class's 'secretKeyFor(SignatureAlgorithm.HS256)' method to create a key guaranteed to be secure enough for HS256.  See https://tools.ietf.org/html/rfc7518#section-3.2 for more information.");
         }
 
@@ -54,7 +66,7 @@ public final class JwtUtils {
         }
 
         final String data = base64UrlEncodedHeader + "." + base64UrlEncodedPayload;
-        final byte[] bytes = MacUtils.hmacSha256(HexUtils.bytesToHex(bytesKey), data);
+        final byte[] bytes = MacUtils.hmacSha256(HexUtils.bytesToHex(jwtKey), data);
         if (Base64Utils.base64UrlEncode(bytes).equals(base64UrlEncodedDigest)) {
             return new Jwt(base64UrlEncodedHeader, base64UrlEncodedPayload, base64UrlEncodedDigest, true);
         } else {
@@ -92,6 +104,27 @@ public final class JwtUtils {
             throw new AssertionError(e);
         }
     }
+
+    // public Long getUserIdFromToken(String token) {
+    //     JwtUtils.Jwt jwt = JwtUtils.hs256Parse(token, jwtKey);
+    //     if (jwt.isValid()) {
+    //         String payload = jwt.payload();
+    //         // Ekstrak user ID dari payload
+    //         // Misalkan payload adalah JSON string
+            
+    //     }
+    //     throw new RuntimeException("Invalid token");
+    // }
+ 
+    // public static Jwt hs256Parse(String token, byte[] jwtKey2) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'hs256Parse'");
+    // }
+
+    // public static boolean validateToken(String jwt, byte[] bytesKey) {
+    //     Jwt parsedJwt = hs256Parse(jwt, bytesKey);
+    //     return parsedJwt.isValid();
+    // }
 
     public static final class Jwt {
 

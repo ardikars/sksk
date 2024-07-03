@@ -1,23 +1,27 @@
 package jawa.sinaukoding.sk.service;
 
-import jawa.sinaukoding.sk.entity.User;
-import jawa.sinaukoding.sk.model.Authentication;
-import jawa.sinaukoding.sk.model.request.LoginReq;
-import jawa.sinaukoding.sk.model.request.RegisterBuyerReq;
-import jawa.sinaukoding.sk.model.request.RegisterSellerReq;
-import jawa.sinaukoding.sk.model.Response;
-import jawa.sinaukoding.sk.model.response.UserDto;
-import jawa.sinaukoding.sk.repository.UserRepository;
-import jawa.sinaukoding.sk.util.HexUtils;
-import jawa.sinaukoding.sk.util.JwtUtils;
+
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+
+
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import jawa.sinaukoding.sk.entity.User;
+import jawa.sinaukoding.sk.model.Authentication;
+import jawa.sinaukoding.sk.model.Response;
+import jawa.sinaukoding.sk.model.request.LoginReq;
+import jawa.sinaukoding.sk.model.request.RegisterBuyerReq;
+import jawa.sinaukoding.sk.model.request.RegisterSellerReq;
+import jawa.sinaukoding.sk.model.request.ResetPasswordReq;
+import jawa.sinaukoding.sk.model.response.UserDto;
+import jawa.sinaukoding.sk.repository.UserRepository;
+import jawa.sinaukoding.sk.util.HexUtils;
+import jawa.sinaukoding.sk.util.JwtUtils;
 
 @Service
 public final class UserService extends AbstractService {
@@ -25,12 +29,15 @@ public final class UserService extends AbstractService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final byte[] jwtKey;
+    // private final JwtUtils jwtUtils;
 
     public UserService(final Environment env, final UserRepository userRepository, final PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         final String skJwtKey = env.getProperty("sk.jwt.key");
         this.jwtKey = HexUtils.hexToBytes(skJwtKey);
+        // this.jwtUtils = jwtUtils;
+
     }
 
     public Response<Object> listUsers(final Authentication authentication, final int page, final int size) {
@@ -110,18 +117,38 @@ public final class UserService extends AbstractService {
         if (!passwordEncoder.matches(req.password(), user.password())) {
             return Response.create("08", "02", "Email atau password salah", null);
         }
-        final Authentication authentication = new Authentication(user.id(), user.role(), true);
+        
         final long iat = System.currentTimeMillis();
         final long exp = 1000 * 60 * 60 * 24; // 24 hour
         final JwtUtils.Header header = new JwtUtils.Header() //
                 .add("typ", "JWT") //
                 .add("alg", "HS256"); //
         final JwtUtils.Payload payload = new JwtUtils.Payload() //
-                .add("sub", authentication.id()) //
+                .add("sub", user.id()) //
                 .add("role", user.role().name()) //
                 .add("iat", iat) //
                 .add("exp", exp); //
+
         final String token = JwtUtils.hs256Tokenize(header, payload, jwtKey);
         return Response.create("08", "00", "Sukses", token);
     }
+
+    public Response<Object> resetPassword(final Authentication authentication, final ResetPasswordReq req, Long id){
+        return precondition(authentication, User.Role.ADMIN,User.Role.BUYER, User.Role.SELLER ).orElseGet(()->{
+            if (req == null){
+                return Response.badRequest();
+            }
+
+            final String encode = passwordEncoder.encode(req.newPassword());
+             Long userId = id;
+            final long saved = userRepository.updatePassword(userId, encode);
+
+            if (0L == saved) {
+                return Response.create("07", "01", "Gagal mereset password", null);
+            }
+            return Response.create("07", "00", "Sukses", saved);
+
+        });
+    }
+
 }

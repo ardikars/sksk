@@ -87,7 +87,7 @@ public class UserRepository {
         if (jdbcTemplate.update(con -> {
             final PreparedStatement ps = con.prepareStatement("UPDATE " + User.TABLE_NAME + " SET password=? WHERE id=?");
             ps.setString(1, newPassword);
-            ps.setLong(2, userId);
+            ps.setLong(2, userId);  
             return ps;
         }) > 0) {
             return userId;

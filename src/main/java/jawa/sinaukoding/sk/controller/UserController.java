@@ -4,9 +4,14 @@ import jawa.sinaukoding.sk.model.Authentication;
 import jawa.sinaukoding.sk.model.Response;
 import jawa.sinaukoding.sk.model.request.RegisterBuyerReq;
 import jawa.sinaukoding.sk.model.request.RegisterSellerReq;
+import jawa.sinaukoding.sk.model.request.ResetPasswordReq;
 import jawa.sinaukoding.sk.service.UserService;
 import jawa.sinaukoding.sk.util.SecurityContextHolder;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/secured/user")
@@ -37,9 +42,15 @@ public class UserController {
     }
 
     @PostMapping("/reset-password")
-    public Response<Object> resetPassword() {
-        // TODO: reset password
-        return null;
+    public Response<Object> resetPassword(@RequestBody ResetPasswordReq req, HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer")){
+            return Response.create("02","01","unauthorized", null);
+        }
+        token = token.substring(7);
+        Authentication authentication = SecurityContextHolder.getAuthentication();
+        return userService.resetPassword(authentication, req, authentication.id());
+
     }
 
     @PostMapping("/update-profile")
