@@ -130,7 +130,6 @@ public final class UserService extends AbstractService {
         final String token = JwtUtils.hs256Tokenize(header, payload, jwtKey);
         return Response.create("08", "00", "Sukses", token);
     }
-
     public Response<Object> updateProfile(final Authentication auth,final UpdateProfileReq req,long id){
         return precondition(auth, User.Role.ADMIN,User.Role.BUYER,User.Role.SELLER).orElseGet(() -> {
             if(id == 0L){
@@ -177,5 +176,26 @@ public final class UserService extends AbstractService {
 
             return Response.create("06", "00", "sukses update profile", update);
         });
+    }
+
+    public Response<Object> deletedResponse(Authentication authentication,final Long id, Long idUser) {
+        return precondition(authentication, User.Role.ADMIN).orElseGet(() -> {
+            final Optional<User> userOpt = userRepository.findById(idUser);
+        if (userOpt.isEmpty()) {
+            return Response.create("08", "01", "Email atau password salah", null);
+        }
+        if (userOpt.get().deletedAt() != null) {
+            return Response.badRequest();
+        }
+        if (id == 0L) {
+            return Response.badRequest();
+        } 
+        Long delete = userRepository.deleteUser(id, idUser);
+        if (delete == 0L) {
+            return Response.create("06", "01", "Gagal menghapus. Data sudah di hapus atau data tidak ditemukan", delete);
+        }
+        return Response.create("06", "00", "Berhasil Menghapus", delete);
+        }
+        );
     }
 }
