@@ -126,6 +126,13 @@ public final class UserService extends AbstractService {
     }
     public Response<Object> deletedResponse(Authentication authentication,final Long id, Long idUser) {
         return precondition(authentication, User.Role.ADMIN).orElseGet(() -> {
+            final Optional<User> userOpt = userRepository.findById(idUser);
+        if (userOpt.isEmpty()) {
+            return Response.create("08", "01", "Email atau password salah", null);
+        }
+        if (userOpt.get().deletedAt() != null) {
+            return Response.badRequest();
+        }
         if (id == 0L) {
             return Response.badRequest();
         } 
