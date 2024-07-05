@@ -46,7 +46,7 @@ public final class UserService extends AbstractService {
                 return Response.badRequest();
             }
             final List<UserDto> users = userRepository.listUsers(page, size) //
-                    .stream().map(user -> new UserDto(user.name())).toList();
+                    .stream().map(user -> new UserDto(user.name(), user.role())).toList();
             return Response.create("09", "00", "Sukses", users);
         });
     }
@@ -133,22 +133,54 @@ public final class UserService extends AbstractService {
         return Response.create("08", "00", "Sukses", token);
     }
 
-    public Response<Object> resetPassword(final Authentication authentication, final ResetPasswordReq req, Long id){
+    public Response<Object> resetPassword(final Authentication authentication, final ResetPasswordReq req,  final Long id){
         return precondition(authentication, User.Role.ADMIN,User.Role.BUYER, User.Role.SELLER ).orElseGet(()->{
-            if (req == null){
+
+            if (req == null || req.newPassword() == null || req.oldPassword() == null){
                 return Response.badRequest();
+            }
+            Long userId = authentication.id();
+
+            Optional<User> userOpt= userRepository.findById(authentication.id());
+            if (userOpt.isEmpty()){
+                return Response.create("07","01" , "user not found", null);
+            }
+
+            User user = userOpt.get();
+
+            if (user.deletedAt() != null || user.deletedBy() != null) {
+                return Response.create("07", "06", "Account has been deleted", null);
+            }
+
+            //ngambil password lama dari authentication.id()
+
+            // compare password lama dengan password baru, kalo sama ada response tidak boleh sama. kalo tidak sama, newpassword baru di encode
+
+            if(!passwordEncoder.matches(req.oldPassword(), user.password())){
+                return Response.create("07","03","Old password is incorect" , null);
+            }
+
+            if(passwordEncoder.matches(req.newPassword(), user.password())){
+                return Response.create("07", "04", "New password cannot be the same as the old password", null);
             }
 
             final String encode = passwordEncoder.encode(req.newPassword());
-             Long userId = id;
+
             final long saved = userRepository.updatePassword(userId, encode);
-
             if (0L == saved) {
-                return Response.create("07", "01", "Gagal mereset password", null);
+                return Response.create("07", "02", "Gagal mereset password", null);
             }
-            return Response.create("07", "00", "Sukses", saved);
 
+            Optional<User> userCheck = userRepository.findById(userId);
+            if (userCheck.isEmpty() || userCheck.get().deletedAt() != null || userCheck.get().deletedBy() != null) {
+                return Response.create("07", "07", "Account no longer exists", null);
+            }
+            UserDto userDto = new UserDto(user.name(), user.role());
+            return Response.create("07", "00", "Sukses", userDto );
+ 
         });
+
+        
     }
 
 }

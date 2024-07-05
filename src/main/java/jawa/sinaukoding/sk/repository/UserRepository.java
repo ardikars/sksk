@@ -84,16 +84,26 @@ public class UserRepository {
     }
 
     public long updatePassword(Long userId, String newPassword) {
-        if (jdbcTemplate.update(con -> {
-            final PreparedStatement ps = con.prepareStatement("UPDATE " + User.TABLE_NAME + " SET password=? WHERE id=?");
-            ps.setString(1, newPassword);
-            ps.setLong(2, userId);  
-            return ps;
-        }) > 0) {
-            return userId;
-        } else {
-            return 0L;
+        try {
+            if (jdbcTemplate.update(con -> {
+                final PreparedStatement ps = con.prepareStatement("UPDATE " + User.TABLE_NAME + " SET password=?, updated_by=?, updated_at=CURRENT_TIMESTAMP WHERE id=?");
+                ps.setString(1, newPassword);
+                ps.setLong(2, userId);
+                ps.setLong(3, userId);
+                return ps;
+            }) > 0) {
+                return userId;
+            } else {
+                return 0L;
+            }
+            
+        } catch (Exception e) {
+           System.err.println("Error reset password for user id" + userId + ": " + e.getMessage());
+           return 0L;
         }
+        
+
+        
     }
 
     public Optional<User> findById(final Long id) {

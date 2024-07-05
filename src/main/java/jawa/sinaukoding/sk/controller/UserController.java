@@ -42,12 +42,8 @@ public class UserController {
     }
 
     @PostMapping("/reset-password")
-    public Response<Object> resetPassword(@RequestBody ResetPasswordReq req, HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if (token == null || !token.startsWith("Bearer")){
-            return Response.create("02","01","unauthorized", null);
-        }
-        token = token.substring(7);
+    public Response<Object> resetPassword(@RequestBody ResetPasswordReq req) {
+
         Authentication authentication = SecurityContextHolder.getAuthentication();
         return userService.resetPassword(authentication, req, authentication.id());
 
@@ -64,4 +60,5 @@ public class UserController {
         // TODO: delete user
         return null;
     }
+
 }
