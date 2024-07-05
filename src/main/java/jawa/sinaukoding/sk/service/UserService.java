@@ -1,14 +1,10 @@
 package jawa.sinaukoding.sk.service;
 
-<<<<<<< HEAD
-
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
-
-=======
 import jawa.sinaukoding.sk.entity.User;
 import jawa.sinaukoding.sk.model.Authentication;
 import jawa.sinaukoding.sk.model.request.LoginReq;
@@ -22,22 +18,12 @@ import jawa.sinaukoding.sk.util.HexUtils;
 import jawa.sinaukoding.sk.util.JwtUtils;
 
 import org.apache.catalina.startup.ClassLoaderFactory.Repository;
->>>>>>> akbar/spring-boot
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import jawa.sinaukoding.sk.entity.User;
-import jawa.sinaukoding.sk.model.Authentication;
-import jawa.sinaukoding.sk.model.Response;
-import jawa.sinaukoding.sk.model.request.LoginReq;
-import jawa.sinaukoding.sk.model.request.RegisterBuyerReq;
-import jawa.sinaukoding.sk.model.request.RegisterSellerReq;
 import jawa.sinaukoding.sk.model.request.ResetPasswordReq;
-import jawa.sinaukoding.sk.model.response.UserDto;
-import jawa.sinaukoding.sk.repository.UserRepository;
-import jawa.sinaukoding.sk.util.HexUtils;
-import jawa.sinaukoding.sk.util.JwtUtils;
+
 
 @Service
 public final class UserService extends AbstractService {
@@ -135,12 +121,8 @@ public final class UserService extends AbstractService {
         if (!passwordEncoder.matches(req.password(), user.password())) {
             return Response.create("08", "02", "Email atau password salah", null);
         }
-<<<<<<< HEAD
-        
-=======
 
         final Authentication authentication = new Authentication(user.id(), user.role(), true);
->>>>>>> akbar/spring-boot
         final long iat = System.currentTimeMillis();
         final long exp = 1000 * 60 * 60 * 24; // 24 hour
         final JwtUtils.Header header = new JwtUtils.Header() //
@@ -156,7 +138,6 @@ public final class UserService extends AbstractService {
         return Response.create("08", "00", "Sukses", token);
     }
 
-<<<<<<< HEAD
     public Response<Object> resetPassword(final Authentication authentication, final ResetPasswordReq req,  final Long id){
         return precondition(authentication, User.Role.ADMIN,User.Role.BUYER, User.Role.SELLER ).orElseGet(()->{
 
@@ -207,7 +188,6 @@ public final class UserService extends AbstractService {
         
     }
 
-=======
     public Response<Object> updateProfile(final Authentication auth,final UpdateProfileReq req,long id){
         return precondition(auth, User.Role.ADMIN,User.Role.BUYER,User.Role.SELLER).orElseGet(() -> {
             if(id == 0L){
@@ -255,5 +235,4 @@ public final class UserService extends AbstractService {
             return Response.create("06", "00", "sukses update profile", update);
         });
     }
->>>>>>> akbar/spring-boot
 }
