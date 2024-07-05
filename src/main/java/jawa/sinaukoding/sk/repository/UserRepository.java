@@ -208,4 +208,20 @@ public class UserRepository {
            return 0L; 
         }
     }
+    public Long deleteUser(final Long id, Long idUser) {
+        if (id == null) {
+            return 0L;
+        }
+        if (jdbcTemplate.update(con -> {
+            final PreparedStatement ps = con.prepareStatement("UPDATE " + User.TABLE_NAME + " SET deleted_by=?, deleted_at=CURRENT_TIMESTAMP WHERE id=?");
+            ps.setLong(1, id);
+            ps.setLong(2, idUser);
+            return ps;
+        }) > 0) {
+            return id;
+        } else {
+            return 0L;
+
+        }
+    }
 }
