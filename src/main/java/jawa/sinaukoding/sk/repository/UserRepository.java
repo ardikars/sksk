@@ -208,6 +208,7 @@ public class UserRepository {
            return 0L; 
         }
     }
+
     public Long deleteUser(final Long id, Long idUser) {
         if (id == null) {
             return 0L;
