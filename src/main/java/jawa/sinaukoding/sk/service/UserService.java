@@ -5,11 +5,14 @@ import jawa.sinaukoding.sk.model.Authentication;
 import jawa.sinaukoding.sk.model.request.LoginReq;
 import jawa.sinaukoding.sk.model.request.RegisterBuyerReq;
 import jawa.sinaukoding.sk.model.request.RegisterSellerReq;
+import jawa.sinaukoding.sk.model.request.UpdateProfileReq;
 import jawa.sinaukoding.sk.model.Response;
 import jawa.sinaukoding.sk.model.response.UserDto;
 import jawa.sinaukoding.sk.repository.UserRepository;
 import jawa.sinaukoding.sk.util.HexUtils;
 import jawa.sinaukoding.sk.util.JwtUtils;
+
+import org.apache.catalina.startup.ClassLoaderFactory.Repository;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -102,14 +105,17 @@ public final class UserService extends AbstractService {
         if (req == null) {
             return Response.badRequest();
         }
+
         final Optional<User> userOpt = userRepository.findByEmail(req.email());
         if (userOpt.isEmpty()) {
             return Response.create("08", "01", "Email atau password salah", null);
         }
+
         final User user = userOpt.get();
         if (!passwordEncoder.matches(req.password(), user.password())) {
             return Response.create("08", "02", "Email atau password salah", null);
         }
+
         final Authentication authentication = new Authentication(user.id(), user.role(), true);
         final long iat = System.currentTimeMillis();
         final long exp = 1000 * 60 * 60 * 24; // 24 hour
@@ -123,5 +129,53 @@ public final class UserService extends AbstractService {
                 .add("exp", exp); //
         final String token = JwtUtils.hs256Tokenize(header, payload, jwtKey);
         return Response.create("08", "00", "Sukses", token);
+    }
+
+    public Response<Object> updateProfile(final Authentication auth,final UpdateProfileReq req,long id){
+        return precondition(auth, User.Role.ADMIN,User.Role.BUYER,User.Role.SELLER).orElseGet(() -> {
+            if(id == 0L){
+                return Response.badRequest();
+            }
+
+            Optional<User> userValidate = userRepository.findById(id);
+
+            if(userValidate.get().deletedAt() != null ){
+                return Response.badRequest();
+            }
+
+            if(req.name() != ""){
+                if(req.name() == userValidate.get().name()){
+                    return Response.create("40", "00", "gagal update user karena nama yang baru sama dengan nama lama", null);
+                }
+            }
+
+            if(req.email() != ""){
+                if(req.email() == userValidate.get().email()){
+                    return Response.create("40", "00", "gagal update user karena email yang baru sama dengan email lama", null);
+                }
+            }
+
+            final User user = new User(
+                id, //
+                req.name(), //
+                req.email(), //
+                null, //
+                null, //
+                null, //
+                id, //
+                null, //
+                null, //
+                OffsetDateTime.now(), //
+                null //
+            );
+
+            final Long update = userRepository.updateProfile(user);
+
+            if(update == 0L){
+                return Response.create("06", "01", "gagal update profile", update);
+            }
+
+            return Response.create("06", "00", "sukses update profile", update);
+        });
     }
 }
