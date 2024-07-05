@@ -49,8 +49,8 @@ public class UserController {
     }
 
     @PostMapping("/delete-user")
-    public Response<Object> deleteUser() {
-        // TODO: delete user
-        return null;
+    public Response<Object> deleteUser(@RequestParam (value = "id") Long id) {
+        Authentication authentication = SecurityContextHolder.getAuthentication();
+        return userService.deletedResponse(authentication, authentication.id(), id);
     }
 }

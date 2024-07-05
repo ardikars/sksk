@@ -147,4 +147,27 @@ public class UserRepository {
             return new User(id, name, email, password, role, createdBy, updatedBy, deletedBy, createdAt, updatedAt, deletedAt);
         }));
     }
+    public Long deleteUser(final Long id, Long idUser) {
+        if (id == null) {
+            return 0L;
+        }
+        Boolean isDeleted = jdbcTemplate.queryForObject(
+            "SELECT deleted FROM sys_user WHERE id=?",
+            new Object[]{id},
+            boolean.class
+    );
+        if (isDeleted != null && isDeleted) {
+            return 0L;
+        }
+        if (jdbcTemplate.update(con -> {
+            final PreparedStatement ps = con.prepareStatement("UPDATE " + User.TABLE_NAME + " SET deleted_by=?, deleted_at=CURRENT_TIMESTAMP, deleted=TRUE WHERE id=?");
+            ps.setLong(1, id);
+            ps.setLong(2, idUser);
+            return ps;
+        }) > 0) {
+            return id;
+        } else {
+            return 0L;
+        }
+    }
 }
