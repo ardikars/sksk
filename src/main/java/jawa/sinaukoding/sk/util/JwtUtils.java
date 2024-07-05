@@ -18,12 +18,6 @@ import org.springframework.stereotype.Component;
 @Component
 public final class JwtUtils {
 
-
-    
-    // public JwtUtils(String jwtKey){
-    //     this.jwtKey = HexUtils.hexToBytes(jwtKey);
-    // }
-
     public static Jwt hs256Parse(String jwt, byte[] jwtKey) {
         if (jwt == null) {
             throw new IllegalArgumentException("JWT token must be not null.");
@@ -105,26 +99,6 @@ public final class JwtUtils {
         }
     }
 
-    // public Long getUserIdFromToken(String token) {
-    //     JwtUtils.Jwt jwt = JwtUtils.hs256Parse(token, jwtKey);
-    //     if (jwt.isValid()) {
-    //         String payload = jwt.payload();
-    //         // Ekstrak user ID dari payload
-    //         // Misalkan payload adalah JSON string
-            
-    //     }
-    //     throw new RuntimeException("Invalid token");
-    // }
- 
-    // public static Jwt hs256Parse(String token, byte[] jwtKey2) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'hs256Parse'");
-    // }
-
-    // public static boolean validateToken(String jwt, byte[] bytesKey) {
-    //     Jwt parsedJwt = hs256Parse(jwt, bytesKey);
-    //     return parsedJwt.isValid();
-    // }
 
     public static final class Jwt {
 

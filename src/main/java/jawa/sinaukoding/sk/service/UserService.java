@@ -1,3 +1,4 @@
+
 package jawa.sinaukoding.sk.service;
 
 
@@ -235,9 +236,4 @@ public final class UserService extends AbstractService {
             return Response.create("06", "00", "sukses update profile", update);
         });
     }
-
-	public Response<Object> deletedResponse(Authentication authentication, Long id, Long id2) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'deletedResponse'");
-	}
 }
