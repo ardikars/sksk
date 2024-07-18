@@ -8,6 +8,8 @@ spring:
     driverClassName: org.sqlite.JDBC
   jpa:
     database-platform: org.hibernate.dialect.SQLiteDialect
+  cors:
+    origins: http://localhost:8000,http://127.0.0.1:8000
 sk:
   jwt:
     key: 46dcf409d6aafd07cda7a224c1bfba8aa85b66dae9d037984881beef6516118d

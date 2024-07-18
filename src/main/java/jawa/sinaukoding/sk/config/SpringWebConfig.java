@@ -10,9 +10,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Configuration
 @Component
-public  class SpringWebConfig {
+public class SpringWebConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -26,6 +29,16 @@ public  class SpringWebConfig {
         final FilterRegistrationBean<AuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new AuthenticationFilter(jwtKey));
         registrationBean.addUrlPatterns("/secured/*");
+        registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return registrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<CorsFilter> corsFilter(Environment env) {
+        final List<String> origins = Arrays.stream(env.getProperty("spring.cors.origins").split(",")).map(s -> s.trim()).toList();
+        final FilterRegistrationBean<CorsFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new CorsFilter(origins));
+        registrationBean.addUrlPatterns("/*");
         registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return registrationBean;
     }
